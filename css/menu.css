@@ -1,198 +1,246 @@
-/* =========================================================
+```css
+/* =====================================================
    MAIN MENU
-========================================================= */
+===================================================== */
 
-#menu{
-    align-items:center;
-    justify-content:center;
-    padding:30px;
+#menu {
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
 }
 
-.menu-wrap{
-    width:min(1150px,95vw);
-    display:grid;
-    grid-template-columns:1.3fr .7fr;
-    gap:20px;
+.menu-wrap {
+    width: min(1150px, 100%);
+
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+
+    gap: 22px;
 }
 
-.hero{
-    min-height:650px;
-    padding:55px;
-    border-radius:25px;
 
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+/* =====================================================
+   HERO
+===================================================== */
 
-    position:relative;
-    overflow:hidden;
+.hero {
+    min-height: 620px;
+
+    padding: 55px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    border-radius: 24px;
+
+    position: relative;
+    overflow: hidden;
 }
 
-.hero:before{
-    content:"";
+.hero::before {
+    content: "";
 
-    position:absolute;
-
-    width:500px;
-    height:500px;
-
-    border-radius:50%;
+    position: absolute;
+    inset: -50%;
 
     background:
         radial-gradient(
-            circle,
-            rgba(82,246,255,.13),
-            transparent 70%
-        );
-
-    top:-180px;
-    right:-100px;
-}
-
-.hero:after{
-    content:"";
-
-    position:absolute;
-
-    width:350px;
-    height:350px;
-
-    border-radius:50%;
-
-    background:
+            circle at 30% 40%,
+            rgba(82, 246, 255, 0.12),
+            transparent 35%
+        ),
         radial-gradient(
-            circle,
-            rgba(155,108,255,.13),
-            transparent 70%
+            circle at 80% 70%,
+            rgba(155, 108, 255, 0.12),
+            transparent 35%
         );
 
-    bottom:-180px;
-    left:-80px;
+    pointer-events: none;
 }
 
-.hero>*{
-    position:relative;
-    z-index:2;
-}
+.hero::after {
+    content: "";
 
-.version{
-    display:inline-block;
+    position: absolute;
+    width: 320px;
+    height: 320px;
 
-    color:var(--cyan);
+    right: -120px;
+    bottom: -120px;
 
-    border:1px solid rgba(82,246,255,.3);
+    border-radius: 50%;
 
-    padding:7px 12px;
-
-    border-radius:999px;
-
-    font-size:10px;
-
-    width:max-content;
-
-    margin-bottom:20px;
-}
-
-.menu-buttons{
-    margin-top:40px;
-
-    display:grid;
-    gap:12px;
-
-    width:min(360px,100%);
-}
-
-.account-card{
-    border-radius:25px;
-    padding:30px;
-
-    display:flex;
-    flex-direction:column;
-
-    gap:18px;
-}
-
-.avatar{
-    width:72px;
-    height:72px;
-
-    border-radius:20px;
-
-    display:grid;
-    place-items:center;
-
-    background:linear-gradient(
-        135deg,
-        #132b47,
-        #201546
-    );
-
-    border:1px solid rgba(82,246,255,.4);
-
-    font-size:30px;
+    border: 1px solid rgba(82, 246, 255, 0.12);
 
     box-shadow:
-        0 0 30px rgba(82,246,255,.1);
+        0 0 80px rgba(82, 246, 255, 0.08),
+        inset 0 0 80px rgba(155, 108, 255, 0.08);
+
+    pointer-events: none;
 }
 
-.account-name{
-    font-size:22px;
-    font-weight:800;
+.hero > * {
+    position: relative;
+    z-index: 1;
 }
 
-.account-level{
-    color:var(--cyan);
-    font-size:11px;
-    letter-spacing:2px;
+.version {
+    color: var(--cyan);
+
+    font-size: 11px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 22px;
+
+    opacity: 0.8;
 }
 
-.account-stats{
-    display:grid;
+.menu-buttons {
+    display: grid;
 
-    grid-template-columns:1fr 1fr;
+    gap: 10px;
 
-    gap:10px;
+    width: min(330px, 100%);
 
-    margin-top:auto;
+    margin-top: 40px;
 }
 
-.stat{
-    padding:14px;
 
-    border-radius:12px;
+/* =====================================================
+   ACCOUNT CARD
+===================================================== */
 
-    background:rgba(255,255,255,.025);
+.account-card {
+    min-height: 620px;
 
-    border:1px solid rgba(255,255,255,.05);
+    padding: 32px;
+
+    border-radius: 24px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+
+    justify-content: center;
 }
 
-.stat-label{
-    color:var(--muted);
-    font-size:8px;
-    letter-spacing:2px;
+.avatar {
+    width: 72px;
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(82, 246, 255, 0.12),
+            rgba(155, 108, 255, 0.15)
+        );
+
+    border: 1px solid rgba(82, 246, 255, 0.25);
+
+    font-size: 36px;
+
+    box-shadow:
+        0 0 35px rgba(82, 246, 255, 0.08);
 }
 
-.stat-value{
-    font-size:18px;
-    margin-top:6px;
+.account-name {
+    font-size: 21px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
 }
 
-.bar{
-    height:5px;
+.account-level {
+    color: var(--cyan);
 
-    background:#181e31;
+    font-size: 11px;
 
-    border-radius:99px;
+    letter-spacing: 2px;
 
-    overflow:hidden;
-
-    margin-top:5px;
+    margin-top: 5px;
 }
 
-.bar i{
-    display:block;
+.small-text {
+    color: var(--muted);
 
-    height:100%;
+    font-size: 10px;
+
+    margin-top: 7px;
+
+    letter-spacing: 1px;
+}
+
+.account-stats {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-top: 8px;
+}
+
+.stat {
+    padding: 14px;
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    border: 1px solid rgba(115, 135, 190, 0.12);
+}
+
+.stat-label {
+    color: var(--muted);
+
+    font-size: 9px;
+
+    letter-spacing: 1.5px;
+}
+
+.stat-value {
+    margin-top: 6px;
+
+    font-size: 17px;
+
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   XP / PROGRESS BAR
+===================================================== */
+
+.bar {
+    height: 8px;
+
+    margin-top: 10px;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    border-radius: 99px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(115, 135, 190, 0.12);
+}
+
+.bar i {
+    display: block;
+
+    width: 0%;
+    height: 100%;
 
     background:
         linear-gradient(
@@ -200,229 +248,351 @@
             var(--cyan),
             var(--purple)
         );
-}
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-#auth{
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-}
-
-.auth-box{
-    width:min(430px,94vw);
-
-    padding:35px;
-
-    border-radius:22px;
-}
-
-.auth-box h2{
-    margin-bottom:8px;
-}
-
-.auth-box p{
-    color:var(--muted);
-
-    font-size:11px;
-
-    line-height:1.7;
-
-    margin-bottom:25px;
-}
-
-.tabs{
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    margin-bottom:20px;
-}
-
-.tab{
-    padding:12px;
-
-    background:transparent;
-
-    color:var(--muted);
-
-    border:0;
-
-    border-bottom:1px solid #242b43;
-}
-
-.tab.active{
-    color:var(--cyan);
-
-    border-color:var(--cyan);
-}
-
-.field{
-    margin-bottom:15px;
-}
-
-.field label{
-    display:block;
-
-    font-size:9px;
-
-    letter-spacing:2px;
-
-    color:var(--muted);
-
-    margin-bottom:7px;
-}
-
-.field input{
-    width:100%;
-
-    padding:13px;
-
-    border-radius:9px;
-
-    border:1px solid #252d49;
-
-    background:#060916;
-
-    color:white;
-
-    outline:none;
-}
-
-.field input:focus{
-    border-color:var(--cyan);
-}
-
-.auth-message{
-    min-height:20px;
-
-    color:var(--red);
-
-    font-size:10px;
-
-    margin-bottom:10px;
-}
-
-/* =========================================================
-   SELECT / SHOP / PROFILE
-========================================================= */
-
-#selectScreen,
-#shopScreen,
-#profileScreen{
-    align-items:center;
-    justify-content:center;
-
-    padding:25px;
-}
-
-.panel{
-    width:min(1100px,95vw);
-
-    max-height:90vh;
-
-    overflow:auto;
-
-    border-radius:22px;
-
-    padding:28px;
-}
-
-.panel::-webkit-scrollbar{
-    width:6px;
-}
-
-.panel::-webkit-scrollbar-thumb{
-    background:#273150;
-    border-radius:10px;
-}
-
-.panel-header{
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:25px;
-}
-
-.panel-title{
-    font-size:25px;
-}
-
-.panel-subtitle{
-    color:var(--muted);
-
-    font-size:9px;
-
-    margin-top:5px;
-}
-
-.cards{
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(210px,1fr)
-        );
-
-    gap:14px;
-}
-
-.card{
-    padding:20px;
-
-    border-radius:15px;
-
-    background:rgba(255,255,255,.025);
-
-    border:1px solid rgba(255,255,255,.07);
-
-    transition:.2s;
-}
-
-.card:hover{
-    border-color:rgba(82,246,255,.35);
-
-    transform:translateY(-2px);
-}
-
-.card.selected{
-    border-color:var(--cyan);
 
     box-shadow:
-        0 0 25px rgba(82,246,255,.12);
+        0 0 14px rgba(82, 246, 255, 0.45);
+
+    transition: width 0.3s ease;
 }
 
-.card h3{
-    margin:12px 0 5px;
+
+/* =====================================================
+   AUTH SCREEN
+===================================================== */
+
+#auth {
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
 }
 
-.card p{
-    color:var(--muted);
+.auth-box {
+    width: min(460px, 100%);
 
-    font-size:9px;
+    padding: 36px;
 
-    line-height:1.6;
+    border-radius: 20px;
 }
 
-.card-icon{
-    font-size:38px;
+.auth-box h2 {
+    font-size: 27px;
+
+    letter-spacing: 3px;
 }
 
-.price{
-    color:var(--yellow);
+.auth-box p {
+    color: var(--muted);
 
-    font-size:11px;
+    font-size: 11px;
 
-    margin:12px 0;
+    line-height: 1.7;
+
+    margin-top: 10px;
 }
 
-.card-actions{
-    margin-top:15px;
+
+/* =====================================================
+   AUTH TABS
+===================================================== */
+
+.tabs {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 6px;
+
+    margin: 25px 0;
 }
+
+.tab {
+    padding: 11px;
+
+    border: 1px solid rgba(115, 135, 190, 0.15);
+
+    background: rgba(255, 255, 255, 0.025);
+
+    color: var(--muted);
+
+    border-radius: 8px;
+
+    transition: 0.2s;
+}
+
+.tab:hover {
+    color: white;
+
+    border-color: rgba(82, 246, 255, 0.3);
+}
+
+.tab.active {
+    color: white;
+
+    border-color: var(--cyan);
+
+    background: rgba(82, 246, 255, 0.08);
+
+    box-shadow:
+        0 0 18px rgba(82, 246, 255, 0.08);
+}
+
+
+/* =====================================================
+   INPUT FIELDS
+===================================================== */
+
+.field {
+    margin-top: 15px;
+}
+
+.field label {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 7px;
+}
+
+.field input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    color: white;
+
+    background: rgba(0, 0, 0, 0.25);
+
+    border: 1px solid rgba(115, 135, 190, 0.2);
+
+    border-radius: 9px;
+
+    outline: none;
+
+    transition: 0.2s;
+}
+
+.field input:focus {
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 18px rgba(82, 246, 255, 0.08);
+}
+
+.auth-message {
+    min-height: 18px;
+
+    color: var(--red);
+
+    font-size: 10px;
+
+    margin-top: 12px;
+}
+
+.auth-submit {
+    width: 100%;
+
+    margin-top: 10px;
+}
+
+
+/* =====================================================
+   SELECT / SHOP / PROFILE PANELS
+===================================================== */
+
+#selectScreen,
+#charactersScreen,
+#shopScreen,
+#profileScreen {
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+}
+
+.panel {
+    width: min(1100px, 100%);
+
+    max-height: calc(100vh - 60px);
+
+    padding: 30px;
+
+    border-radius: 20px;
+
+    overflow-y: auto;
+}
+
+.panel::-webkit-scrollbar {
+    width: 7px;
+}
+
+.panel::-webkit-scrollbar-thumb {
+    background: rgba(82, 246, 255, 0.2);
+
+    border-radius: 99px;
+}
+
+.panel-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.panel-title {
+    font-size: 25px;
+
+    font-weight: 800;
+
+    letter-spacing: 3px;
+}
+
+.panel-subtitle {
+    color: var(--muted);
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    line-height: 1.7;
+
+    margin-top: 6px;
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.cards {
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+    );
+
+    gap: 14px;
+}
+
+.card {
+    padding: 22px;
+
+    min-height: 170px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17, 22, 43, 0.75),
+            rgba(7, 9, 20, 0.75)
+        );
+
+    border: 1px solid rgba(115, 135, 190, 0.16);
+
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+
+    border-color: rgba(82, 246, 255, 0.4);
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.25),
+        0 0 25px rgba(82, 246, 255, 0.06);
+}
+
+.card.selected {
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 25px rgba(82, 246, 255, 0.12);
+}
+
+.card h3 {
+    font-size: 16px;
+
+    letter-spacing: 1.5px;
+}
+
+.card p {
+    color: var(--muted);
+
+    font-size: 10px;
+
+    line-height: 1.7;
+
+    margin-top: 7px;
+}
+
+.card-icon {
+    font-size: 30px;
+
+    margin-bottom: 12px;
+}
+
+.price {
+    color: var(--yellow);
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    margin-top: 15px;
+}
+
+.card-actions {
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+    margin-top: 15px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 800px) {
+
+    .menu-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        min-height: 500px;
+
+        padding: 35px;
+    }
+
+    .account-card {
+        display: none;
+    }
+
+    .title {
+        letter-spacing: 5px;
+    }
+
+    .upgrade-grid {
+        grid-template-columns: 1fr;
+    }
+}
+```
