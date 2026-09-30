@@ -1,5 +1,14 @@
-export const CHARACTERS = {
+```js
+// =====================================================
+// VOID RUSH // STATIC GAME DATA
+// =====================================================
 
+
+// =====================================================
+// CHARACTERS
+// =====================================================
+
+export const CHARACTERS = {
     pilot: {
         name: "PILOT",
         icon: "🚀",
@@ -39,12 +48,14 @@ export const CHARACTERS = {
         luck: 1.7,
         cost: 2500
     }
-
 };
 
 
-export const SHOP = {
+// =====================================================
+// SHOP
+// =====================================================
 
+export const SHOP = {
     core: {
         name: "EXTRA CORE",
         icon: "❤️",
@@ -72,12 +83,14 @@ export const SHOP = {
         description: "Occasionally prevents a collision.",
         base: 1200
     }
-
 };
 
 
-export const LEVELS = [
+// =====================================================
+// LEVELS
+// =====================================================
 
+export const LEVELS = [
     {
         name: "AWAKENING",
         distance: 1800,
@@ -145,24 +158,30 @@ export const LEVELS = [
         boss: true,
         bossType: "void"
     }
-
 ];
 
 
-export const UPGRADES = [
+// =====================================================
+// LEVEL-UP UPGRADES
+// =====================================================
 
+export const UPGRADES = [
     {
         icon: "⚡",
         name: "OVERDRIVE",
         description: "+12% movement speed.",
-        apply: player => player.speed *= 1.12
+        apply: player => {
+            player.speed *= 1.12;
+        }
     },
 
     {
         icon: "🔥",
         name: "AMPLIFIER",
         description: "+20% score multiplier.",
-        apply: player => player.scoreMult *= 1.2
+        apply: player => {
+            player.scoreMult *= 1.2;
+        }
     },
 
     {
@@ -179,21 +198,27 @@ export const UPGRADES = [
         icon: "🧲",
         name: "MAGNETISM",
         description: "Stronger orb attraction.",
-        apply: player => player.magnet += 45
+        apply: player => {
+            player.magnet += 45;
+        }
     },
 
     {
         icon: "🍀",
         name: "LUCK",
         description: "+25% chance for bonus rewards.",
-        apply: player => player.luck += 0.25
+        apply: player => {
+            player.luck += 0.25;
+        }
     },
 
     {
         icon: "🛡️",
         name: "PHASE ARMOR",
         description: "Reduces collision damage.",
-        apply: player => player.armor++
+        apply: player => {
+            player.armor++;
+        }
     }
-
 ];
+```
