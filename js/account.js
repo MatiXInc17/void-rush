@@ -1,11 +1,27 @@
+```js
+// =====================================================
+// VOID RUSH // ACCOUNT SYSTEM
+// =====================================================
+
+
+// =====================================================
+// STORAGE KEYS
+// =====================================================
+
 const USERS_KEY = "voidRushUsers";
-const CURRENT_KEY = "voidRushCurrent";
+const CURRENT_USER_KEY = "voidRushCurrent";
+
+
+// =====================================================
+// USER STORAGE
+// =====================================================
 
 export function getUsers() {
     return JSON.parse(
         localStorage.getItem(USERS_KEY) || "{}"
     );
 }
+
 
 export function saveUsers(users) {
     localStorage.setItem(
@@ -14,38 +30,17 @@ export function saveUsers(users) {
     );
 }
 
-export function getCurrentUserKey() {
-    return localStorage.getItem(CURRENT_KEY);
-}
 
-export function setCurrentUser(key) {
-    localStorage.setItem(CURRENT_KEY, key);
-}
+// =====================================================
+// DEFAULT USER
+// =====================================================
 
-export function clearCurrentUser() {
-    localStorage.removeItem(CURRENT_KEY);
-}
-
-export function getCurrentUser() {
-
-    const key = getCurrentUserKey();
-    const users = getUsers();
-
-    if (!key || !users[key]) {
-        return null;
-    }
-
-    return users[key];
-}
-
-export function createDefaultUser(username, password) {
-
+export function defaultUser(username, password) {
     return {
-
         username,
         password,
 
-        created: new Date().toLocaleDateString(),
+        created: Date.now(),
 
         level: 1,
         xp: 0,
@@ -53,14 +48,15 @@ export function createDefaultUser(username, password) {
         coins: 0,
 
         highScore: 0,
-
         wins: 0,
         deaths: 0,
         bosses: 0,
 
         selectedCharacter: "pilot",
 
-        ownedCharacters: ["pilot"],
+        ownedCharacters: [
+            "pilot"
+        ],
 
         upgrades: {
             core: 0,
@@ -68,83 +64,170 @@ export function createDefaultUser(username, password) {
             magnet: 0,
             shield: 0
         }
-
     };
 }
 
 
-export function register(username, password) {
+// =====================================================
+// CURRENT USER
+// =====================================================
+
+export function getCurrentUsername() {
+    return localStorage.getItem(
+        CURRENT_USER_KEY
+    );
+}
+
+
+export function setCurrentUsername(username) {
+    localStorage.setItem(
+        CURRENT_USER_KEY,
+        username
+    );
+}
+
+
+export function clearCurrentUser() {
+    localStorage.removeItem(
+        CURRENT_USER_KEY
+    );
+}
+
+
+export function getCurrentUser() {
+    const username = getCurrentUsername();
+
+    if (!username) {
+        return null;
+    }
 
     const users = getUsers();
-    const key = username.toLowerCase();
 
-    if (users[key]) {
+    return users[username] || null;
+}
+
+
+// =====================================================
+// UPDATE CURRENT USER
+// =====================================================
+
+export function updateCurrentUser(updates) {
+    const username = getCurrentUsername();
+
+    if (!username) {
+        return null;
+    }
+
+    const users = getUsers();
+
+    if (!users[username]) {
+        return null;
+    }
+
+    users[username] = {
+        ...users[username],
+        ...updates
+    };
+
+    saveUsers(users);
+
+    return users[username];
+}
+
+
+// =====================================================
+// CREATE ACCOUNT
+// =====================================================
+
+export function registerUser(username, password) {
+    const users = getUsers();
+
+    if (users[username]) {
         return {
-            ok: false,
-            message: "That username already exists."
+            success: false,
+            message: "USERNAME ALREADY EXISTS."
         };
     }
 
-    users[key] = createDefaultUser(
+    const user = defaultUser(
         username,
         password
     );
 
+    users[username] = user;
+
     saveUsers(users);
-    setCurrentUser(key);
+
+    setCurrentUsername(username);
 
     return {
-        ok: true,
-        user: users[key]
+        success: true,
+        user
     };
 }
 
 
-export function login(username, password) {
+// =====================================================
+// LOGIN
+// =====================================================
 
+export function loginUser(username, password) {
     const users = getUsers();
-    const key = username.toLowerCase();
 
-    if (!users[key]) {
+    const user = users[username];
+
+    if (!user) {
         return {
-            ok: false,
-            message: "Account not found."
+            success: false,
+            message: "ACCOUNT NOT FOUND."
         };
     }
 
-    if (users[key].password !== password) {
+    if (user.password !== password) {
         return {
-            ok: false,
-            message: "Incorrect password."
+            success: false,
+            message: "INCORRECT PASSWORD."
         };
     }
 
-    setCurrentUser(key);
+    setCurrentUsername(username);
 
     return {
-        ok: true,
-        user: users[key]
+        success: true,
+        user
     };
 }
 
 
-export function logout() {
+// =====================================================
+// LOGOUT
+// =====================================================
+
+export function logoutUser() {
     clearCurrentUser();
 }
 
 
-export function updateCurrentUser(mutator) {
+// =====================================================
+// AUTH CHECK
+// =====================================================
 
-    const key = getCurrentUserKey();
-    const users = getUsers();
+export function isLoggedIn() {
+    return getCurrentUser() !== null;
+}
 
-    if (!key || !users[key]) {
-        return null;
+
+// =====================================================
+// REQUIRE LOGIN
+// =====================================================
+
+export function requireLogin() {
+    const user = getCurrentUser();
+
+    if (!user) {
+        return false;
     }
 
-    mutator(users[key]);
-
-    saveUsers(users);
-
-    return users[key];
+    return true;
 }
+```
