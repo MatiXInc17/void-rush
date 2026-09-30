@@ -1,207 +1,226 @@
+```css
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-:root{
-    --bg:#050611;
-    --panel:#0b0e1c;
-    --panel2:#101528;
-    --cyan:#52f6ff;
-    --purple:#9b6cff;
-    --pink:#ff4fd8;
-    --green:#59ff9a;
-    --yellow:#ffe66d;
-    --red:#ff5277;
-    --text:#edf4ff;
-    --muted:#8490ad;
+:root {
+    --bg: #050611;
+    --panel: #0b0e1c;
+    --panel2: #101528;
+
+    --cyan: #52f6ff;
+    --purple: #9b6cff;
+    --pink: #ff4fd8;
+    --green: #59ff9a;
+    --yellow: #ffe66d;
+    --red: #ff5277;
+
+    --text: #edf4ff;
+    --muted: #8490ad;
 }
 
-body{
-    min-height:100vh;
-    overflow:hidden;
+body {
+    min-height: 100vh;
+    overflow: hidden;
+
     background:
-        radial-gradient(circle at 50% 10%,#161b45 0%,#070915 40%,#03040a 100%);
-    color:var(--text);
-    font-family:Orbitron,Arial,sans-serif;
+        radial-gradient(
+            circle at 50% 10%,
+            #161b45 0%,
+            #070915 40%,
+            #03040a 100%
+        );
+
+    color: var(--text);
+    font-family: Orbitron, Arial, sans-serif;
 }
 
 button,
-input{
-    font:inherit;
+input {
+    font: inherit;
 }
 
-button{
-    cursor:pointer;
+button {
+    cursor: pointer;
 }
 
-/* BACKGROUND */
 
-#background{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    overflow:hidden;
-    z-index:0;
+/* =====================================================
+   GLOBAL BACKGROUND
+===================================================== */
+
+#background {
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+    overflow: hidden;
+
+    z-index: 0;
 }
 
-.star{
-    position:absolute;
-    width:2px;
-    height:2px;
-    background:white;
-    border-radius:50%;
-    opacity:.5;
-    animation:twinkle 3s infinite ease-in-out;
+.star {
+    position: absolute;
+
+    width: 2px;
+    height: 2px;
+
+    background: white;
+    border-radius: 50%;
+
+    opacity: 0.5;
+
+    animation: twinkle 3s infinite ease-in-out;
 }
 
-@keyframes twinkle{
-    0%,100%{
-        opacity:.15;
-        transform:scale(.7);
+@keyframes twinkle {
+    0%,
+    100% {
+        opacity: 0.15;
+        transform: scale(0.7);
     }
 
-    50%{
-        opacity:1;
-        transform:scale(1.5);
+    50% {
+        opacity: 1;
+        transform: scale(1.5);
     }
 }
 
-/* GENERAL UI */
 
-.screen{
-    position:absolute;
-    inset:0;
-    z-index:10;
-    display:none;
+/* =====================================================
+   SCREENS
+===================================================== */
+
+.screen {
+    position: absolute;
+    inset: 0;
+
+    z-index: 10;
+
+    display: none;
 }
 
-.screen.active{
-    display:flex;
+.screen.active {
+    display: flex;
 }
 
-.glass{
-    background:linear-gradient(
-        145deg,
-        rgba(17,22,43,.92),
-        rgba(7,9,20,.92)
-    );
 
-    border:1px solid rgba(115,135,190,.22);
+/* =====================================================
+   GLASS PANELS
+===================================================== */
+
+.glass {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17, 22, 43, 0.92),
+            rgba(7, 9, 20, 0.92)
+        );
+
+    border: 1px solid rgba(115, 135, 190, 0.22);
 
     box-shadow:
-        0 20px 70px rgba(0,0,0,.45),
-        inset 0 1px rgba(255,255,255,.04);
+        0 20px 70px rgba(0, 0, 0, 0.45),
+        inset 0 1px rgba(255, 255, 255, 0.04);
 
-    backdrop-filter:blur(14px);
+    backdrop-filter: blur(14px);
 }
 
-.title{
-    font-size:clamp(38px,7vw,88px);
-    font-weight:900;
-    letter-spacing:10px;
+
+/* =====================================================
+   TITLES
+===================================================== */
+
+.title {
+    font-size: clamp(38px, 7vw, 88px);
+
+    font-weight: 900;
+
+    letter-spacing: 10px;
 
     text-shadow:
         0 0 10px var(--cyan),
-        0 0 40px rgba(82,246,255,.45);
+        0 0 40px rgba(82, 246, 255, 0.45);
 }
 
-.subtitle{
-    color:var(--muted);
-    letter-spacing:4px;
-    font-size:12px;
-    margin-top:8px;
+.subtitle {
+    color: var(--muted);
+
+    letter-spacing: 4px;
+
+    font-size: 12px;
+
+    margin-top: 8px;
 }
 
-.btn{
-    border:1px solid rgba(82,246,255,.4);
-    background:linear-gradient(135deg,#101a32,#0b1020);
-    color:white;
-    padding:14px 24px;
-    border-radius:10px;
-    transition:.2s;
-    position:relative;
-    overflow:hidden;
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.btn {
+    border: 1px solid rgba(82, 246, 255, 0.4);
+
+    background:
+        linear-gradient(
+            135deg,
+            #101a32,
+            #0b1020
+        );
+
+    color: white;
+
+    padding: 14px 24px;
+
+    border-radius: 10px;
+
+    transition: 0.2s;
+
+    position: relative;
+
+    overflow: hidden;
 }
 
-.btn:hover{
-    transform:translateY(-2px);
-    border-color:var(--cyan);
-    box-shadow:0 0 25px rgba(82,246,255,.2);
+.btn:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 25px rgba(82, 246, 255, 0.2);
 }
 
-.btn.primary{
-    background:linear-gradient(135deg,#116d7b,#33226b);
-    border-color:var(--cyan);
+.btn.primary {
+    background:
+        linear-gradient(
+            135deg,
+            #116d7b,
+            #33226b
+        );
+
+    border-color: var(--cyan);
 }
 
-.btn.danger{
-    border-color:rgba(255,82,119,.5);
+.btn.danger {
+    border-color: rgba(255, 82, 119, 0.5);
 }
 
-.btn.small{
-    padding:9px 14px;
-    font-size:11px;
+.btn.small {
+    padding: 9px 14px;
+
+    font-size: 11px;
 }
 
-.hidden{
-    display:none!important;
+
+/* =====================================================
+   UTILITIES
+===================================================== */
+
+.hidden {
+    display: none !important;
 }
-
-/* TOAST */
-
-#toast{
-    position:fixed;
-    z-index:100;
-    left:50%;
-    bottom:30px;
-
-    transform:translate(-50%,20px);
-
-    opacity:0;
-    pointer-events:none;
-
-    background:#0b1020;
-    border:1px solid rgba(82,246,255,.35);
-
-    padding:12px 18px;
-    border-radius:10px;
-
-    font-size:10px;
-
-    transition:.3s;
-}
-
-#toast.show{
-    opacity:1;
-    transform:translate(-50%,0);
-}
-
-/* RESPONSIVE */
-
-@media(max-width:800px){
-
-    .menu-wrap{
-        grid-template-columns:1fr;
-    }
-
-    .hero{
-        min-height:500px;
-        padding:35px;
-    }
-
-    .account-card{
-        display:none;
-    }
-
-    .upgrade-grid{
-        grid-template-columns:1fr;
-    }
-
-    .title{
-        letter-spacing:5px;
-    }
-}
+```
