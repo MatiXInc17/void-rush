@@ -1,747 +1,678 @@
 import {
-    getCurrentUser,
-    getUsers,
-    updateCurrentUser,
-    register,
-    login,
-    logout
-} from "./account.js";
-
-import {
-    CHARACTERS,
-    SHOP,
-    LEVELS
+  CHARACTERS,
+  SHOP,
+  LEVELS
 } from "./data.js";
 
 import {
-    xpNeeded,
-    getProgress
-} from "./progression.js";
-
+  getCurrentUser,
+  updateCurrentUser,
+  registerUser,
+  loginUser,
+  logoutUser,
+  getUsers,
+  saveUsers
+} from "./account.js";
 
 export class Menu {
-
-    constructor(game) {
-
-        this.game = game;
-
-        this.authMode = "login";
-
-        this.bindEvents();
-
-        this.update();
-
-    }
-
-
-    bindEvents() {
-
-        document
-            .querySelector("#playBtn")
-            .addEventListener(
-                "click",
-                () => this.openLevelSelect()
-            );
-
-        document
-            .querySelector("#charactersBtn")
-            .addEventListener(
-                "click",
-                () => this.openCharacters()
-            );
-
-        document
-            .querySelector("#shopBtn")
-            .addEventListener(
-                "click",
-                () => this.openShop()
-            );
-
-        document
-            .querySelector("#profileBtn")
-            .addEventListener(
-                "click",
-                () => this.openProfile()
-            );
-
-        document
-            .querySelector("#logoutBtn")
-            .addEventListener(
-                "click",
-                () => this.logout()
-            );
-
-        document
-            .querySelector("#loginTab")
-            .addEventListener(
-                "click",
-                () => this.switchAuth("login")
-            );
-
-        document
-            .querySelector("#registerTab")
-            .addEventListener(
-                "click",
-                () => this.switchAuth("register")
-            );
-
-        document
-            .querySelector("#authSubmit")
-            .addEventListener(
-                "click",
-                () => this.submitAuth()
-            );
-
-        document
-            .querySelectorAll(".backMenu")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    () => this.showScreen("menu")
-                );
-
-            });
-
-    }
-
-
-    showScreen(id) {
-
-        document
-            .querySelectorAll(".screen")
-            .forEach(screen =>
-                screen.classList.remove("active")
-            );
-
-        document
-            .getElementById(id)
-            .classList.add("active");
-
-    }
-
-
-    requireLogin() {
-
-        if (!getCurrentUser()) {
-
-            this.showScreen("auth");
-
-            return false;
-
-        }
-
-        return true;
-
-    }
-
-
-    switchAuth(mode) {
-
-        this.authMode = mode;
-
-        document
-            .querySelector("#loginTab")
-            .classList.toggle(
-                "active",
-                mode === "login"
-            );
-
-        document
-            .querySelector("#registerTab")
-            .classList.toggle(
-                "active",
-                mode === "register"
-            );
-
-        document
-            .querySelector("#authTitle")
-            .textContent =
-            mode === "login"
-                ? "WELCOME BACK"
-                : "CREATE PILOT";
-
-        document
-            .querySelector("#authMessage")
-            .textContent = "";
-
-    }
-
-
-    submitAuth() {
-
-        const username =
-            document
-                .querySelector("#authUsername")
-                .value
-                .trim();
-
-        const password =
-            document
-                .querySelector("#authPassword")
-                .value;
-
-        const message =
-            document.querySelector("#authMessage");
-
-
-        if (username.length < 3) {
-
-            message.textContent =
-                "Username must contain at least 3 characters.";
-
-            return;
-
-        }
-
-
-        if (password.length < 4) {
-
-            message.textContent =
-                "Password must contain at least 4 characters.";
-
-            return;
-
-        }
-
-
-        const result =
-            this.authMode === "login"
-                ? login(username, password)
-                : register(username, password);
-
-
-        if (!result.ok) {
-
-            message.textContent = result.message;
-
-            return;
-
-        }
-
-
+  constructor(game = null) {
+    this.game = game;
+
+    this.cacheElements();
+    this.bindEvents();
+
+    this.initialize();
+  }
+
+  // =========================================
+  // CONNECTION
+  // =========================================
+
+  setGame(game) {
+    this.game = game;
+  }
+
+  // =========================================
+  // DOM
+  // =========================================
+
+  cacheElements() {
+    // Screens
+    this.menuScreen = document.getElementById("menu");
+    this.authScreen = document.getElementById("auth");
+    this.selectScreen = document.getElementById("selectScreen");
+    this.charactersScreen = document.getElementById("charactersScreen");
+    this.shopScreen = document.getElementById("shopScreen");
+    this.profileScreen = document.getElementById("profileScreen");
+
+    // Menu
+    this.playBtn = document.getElementById("playBtn");
+    this.charactersBtn = document.getElementById("charactersBtn");
+    this.shopBtn = document.getElementById("shopBtn");
+    this.profileBtn = document.getElementById("profileBtn");
+    this.logoutBtn = document.getElementById("logoutBtn");
+
+    // Account display
+    this.menuAvatar = document.getElementById("menuAvatar");
+    this.menuUsername = document.getElementById("menuUsername");
+    this.menuLevel = document.getElementById("menuLevel");
+    this.menuXP = document.getElementById("menuXP");
+    this.menuCoins = document.getElementById("menuCoins");
+    this.menuHighScore = document.getElementById("menuHighScore");
+    this.menuWins = document.getElementById("menuWins");
+    this.menuBosses = document.getElementById("menuBosses");
+
+    // Auth
+    this.loginTab = document.getElementById("loginTab");
+    this.registerTab = document.getElementById("registerTab");
+    this.usernameInput = document.getElementById("authUsername");
+    this.passwordInput = document.getElementById("authPassword");
+    this.authSubmit = document.getElementById("authSubmit");
+    this.authMessage = document.getElementById("authMessage");
+
+    // Dynamic panels
+    this.levelCards = document.getElementById("levelCards");
+    this.characterCards = document.getElementById("characterCards");
+    this.shopCards = document.getElementById("shopCards");
+
+    // Profile
+    this.profileUsername = document.getElementById("profileUsername");
+    this.profileLevel = document.getElementById("profileLevel");
+    this.profileXP = document.getElementById("profileXP");
+    this.profileCoins = document.getElementById("profileCoins");
+    this.profileHighScore = document.getElementById("profileHighScore");
+    this.profileWins = document.getElementById("profileWins");
+    this.profileDeaths = document.getElementById("profileDeaths");
+    this.profileBosses = document.getElementById("profileBosses");
+    this.profileJoined = document.getElementById("profileJoined");
+
+    // Toast
+    this.toastElement = document.getElementById("toast");
+    this.toastTimeout = null;
+  }
+
+  // =========================================
+  // EVENTS
+  // =========================================
+
+  bindEvents() {
+    // Main menu
+    this.playBtn?.addEventListener("click", () => {
+      this.openLevelSelect();
+    });
+
+    this.charactersBtn?.addEventListener("click", () => {
+      this.openCharacters();
+    });
+
+    this.shopBtn?.addEventListener("click", () => {
+      this.openShop();
+    });
+
+    this.profileBtn?.addEventListener("click", () => {
+      this.openProfile();
+    });
+
+    this.logoutBtn?.addEventListener("click", () => {
+      this.logout();
+    });
+
+    // Auth
+    this.loginTab?.addEventListener("click", () => {
+      this.switchAuth("login");
+    });
+
+    this.registerTab?.addEventListener("click", () => {
+      this.switchAuth("register");
+    });
+
+    this.authSubmit?.addEventListener("click", () => {
+      this.submitAuth();
+    });
+
+    this.passwordInput?.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        this.submitAuth();
+      }
+    });
+
+    this.usernameInput?.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        this.submitAuth();
+      }
+    });
+
+    // Back buttons
+    document.querySelectorAll(".backMenu").forEach(button => {
+      button.addEventListener("click", () => {
         this.showScreen("menu");
+      });
+    });
 
-        this.update();
+    // Dynamic level cards
+    this.levelCards?.addEventListener("click", event => {
+      const button = event.target.closest("[data-level-index]");
 
-        this.toast(
-            this.authMode === "login"
-                ? `WELCOME BACK, ${result.user.username.toUpperCase()}`
-                : "ACCOUNT CREATED"
-        );
+      if (!button || button.disabled) {
+        return;
+      }
 
+      const index = Number(button.dataset.levelIndex);
+
+      if (this.game?.startGame) {
+        this.showScreen("game");
+        this.game.startGame(index);
+      }
+    });
+
+    // Dynamic character cards
+    this.characterCards?.addEventListener("click", event => {
+      const button = event.target.closest("[data-character-id]");
+
+      if (!button || button.disabled) {
+        return;
+      }
+
+      this.selectCharacter(button.dataset.characterId);
+    });
+
+    // Dynamic shop cards
+    this.shopCards?.addEventListener("click", event => {
+      const button = event.target.closest("[data-upgrade-id]");
+
+      if (!button || button.disabled) {
+        return;
+      }
+
+      this.buyUpgrade(button.dataset.upgradeId);
+    });
+  }
+
+  // =========================================
+  // INITIALIZATION
+  // =========================================
+
+  initialize() {
+    if (getCurrentUser()) {
+      this.updateMenu();
+      this.showScreen("menu");
+    } else {
+      this.showScreen("auth");
+    }
+  }
+
+  // =========================================
+  // SCREENS
+  // =========================================
+
+  showScreen(id) {
+    document.querySelectorAll(".screen").forEach(screen => {
+      screen.classList.remove("active");
+    });
+
+    const screen = document.getElementById(id);
+
+    if (screen) {
+      screen.classList.add("active");
+    }
+  }
+
+  requireLogin() {
+    if (!getCurrentUser()) {
+      this.showScreen("auth");
+      this.setAuthMessage("Please log in first.", true);
+      return false;
     }
 
+    return true;
+  }
 
-    logout() {
+  // =========================================
+  // AUTH
+  // =========================================
 
-        logout();
+  switchAuth(mode) {
+    const isLogin = mode === "login";
 
-        this.showScreen("auth");
+    this.loginTab?.classList.toggle("active", isLogin);
+    this.registerTab?.classList.toggle("active", !isLogin);
 
-        this.switchAuth("login");
-
+    if (this.authSubmit) {
+      this.authSubmit.textContent = isLogin
+        ? "ENTER VOID"
+        : "CREATE ACCOUNT";
     }
 
+    this.setAuthMessage("");
+  }
 
-    update() {
+  submitAuth() {
+    const username = this.usernameInput?.value.trim() || "";
+    const password = this.passwordInput?.value || "";
 
-        const user = getCurrentUser();
+    const isLogin = this.loginTab?.classList.contains("active");
 
-        if (!user) {
+    if (!username || !password) {
+      this.setAuthMessage("Enter a username and password.", true);
+      return;
+    }
 
-            document
-                .querySelector("#menuUsername")
-                .textContent = "GUEST";
+    let result;
 
-            return;
+    if (isLogin) {
+      result = loginUser(username, password);
+    } else {
+      result = registerUser(username, password);
+    }
 
+    if (!result.success) {
+      this.setAuthMessage(result.message, true);
+      return;
+    }
+
+    this.setAuthMessage("");
+
+    if (this.usernameInput) {
+      this.usernameInput.value = "";
+    }
+
+    if (this.passwordInput) {
+      this.passwordInput.value = "";
+    }
+
+    this.updateMenu();
+    this.showScreen("menu");
+
+    this.toast(
+      isLogin
+        ? `Welcome back, ${username}.`
+        : `Account created. Welcome, ${username}.`
+    );
+  }
+
+  setAuthMessage(message, error = false) {
+    if (!this.authMessage) {
+      return;
+    }
+
+    this.authMessage.textContent = message;
+    this.authMessage.style.color = error
+      ? "var(--red)"
+      : "var(--muted)";
+  }
+
+  logout() {
+    logoutUser();
+
+    if (this.game?.stopGame) {
+      this.game.stopGame();
+    }
+
+    this.showScreen("auth");
+    this.switchAuth("login");
+
+    this.toast("Logged out.");
+  }
+
+  // =========================================
+  // MENU
+  // =========================================
+
+  updateMenu() {
+    const user = getCurrentUser();
+
+    if (!user) {
+      return;
+    }
+
+    if (this.menuAvatar) {
+      const character = CHARACTERS[user.selectedCharacter] || CHARACTERS.pilot;
+      this.menuAvatar.textContent = character.icon;
+    }
+
+    if (this.menuUsername) {
+      this.menuUsername.textContent = user.username;
+    }
+
+    if (this.menuLevel) {
+      this.menuLevel.textContent = `LEVEL ${user.level}`;
+    }
+
+    if (this.menuXP) {
+      this.menuXP.textContent = `${user.xp} XP`;
+    }
+
+    if (this.menuCoins) {
+      this.menuCoins.textContent = user.coins;
+    }
+
+    if (this.menuHighScore) {
+      this.menuHighScore.textContent = user.highScore;
+    }
+
+    if (this.menuWins) {
+      this.menuWins.textContent = user.wins;
+    }
+
+    if (this.menuBosses) {
+      this.menuBosses.textContent = user.bosses;
+    }
+  }
+
+  // =========================================
+  // LEVEL SELECT
+  // =========================================
+
+  openLevelSelect() {
+    if (!this.requireLogin()) {
+      return;
+    }
+
+    const user = getCurrentUser();
+
+    this.levelCards.innerHTML = LEVELS.map((level, index) => {
+      const unlocked = index === 0 || user.wins >= index;
+
+      const bossText = level.boss
+        ? `<span class="price">⚠ BOSS</span>`
+        : "";
+
+      return `
+        <div class="card ${unlocked ? "" : "locked"}">
+          <div class="card-icon" style="color:${level.color}">
+            ${String(index + 1).padStart(2, "0")}
+          </div>
+
+          <h3>${level.name}</h3>
+
+          <p>
+            Distance: ${level.distance}
+            <br>
+            Speed: ×${level.speed}
+          </p>
+
+          ${bossText}
+
+          <div class="card-actions">
+            <button
+              class="btn ${unlocked ? "primary" : "small"}"
+              data-level-index="${index}"
+              ${unlocked ? "" : "disabled"}
+            >
+              ${unlocked ? "PLAY" : "🔒 LOCKED"}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    this.showScreen("selectScreen");
+  }
+
+  // =========================================
+  // CHARACTERS
+  // =========================================
+
+  openCharacters() {
+    if (!this.requireLogin()) {
+      return;
+    }
+
+    const user = getCurrentUser();
+
+    this.characterCards.innerHTML = Object.entries(CHARACTERS)
+      .map(([id, character]) => {
+        const owned = user.ownedCharacters.includes(id);
+        const selected = user.selectedCharacter === id;
+
+        const speedPercent = Math.min(100, character.speed / 8 * 100);
+        const sizePercent = Math.min(100, character.size / 20 * 100);
+        const luckPercent = Math.min(100, character.luck / 2 * 100);
+
+        let actionText = "SELECT";
+        let disabled = false;
+
+        if (selected) {
+          actionText = "SELECTED";
+          disabled = true;
+        } else if (!owned) {
+          actionText = `BUY • ${character.cost}`;
         }
 
+        return `
+          <div class="card ${selected ? "selected" : ""}">
+            <div class="card-icon">${character.icon}</div>
 
-        document
-            .querySelector("#menuUsername")
-            .textContent = user.username;
+            <h3>${character.name}</h3>
 
-        document
-            .querySelector("#menuLevel")
-            .textContent =
-            `LEVEL ${user.level}`;
+            <p>${character.description}</p>
 
-        document
-            .querySelector("#menuCoins")
-            .textContent = user.coins;
+            <div class="small-text">SPEED</div>
+            <div class="bar">
+              <i style="width:${speedPercent}%"></i>
+            </div>
 
-        document
-            .querySelector("#menuHigh")
-            .textContent = user.highScore;
+            <div class="small-text">SIZE</div>
+            <div class="bar">
+              <i style="width:${sizePercent}%"></i>
+            </div>
 
-        document
-            .querySelector("#menuWins")
-            .textContent = user.wins;
+            <div class="small-text">LUCK</div>
+            <div class="bar">
+              <i style="width:${luckPercent}%"></i>
+            </div>
 
-        document
-            .querySelector("#menuBosses")
-            .textContent = user.bosses;
+            <div class="card-actions">
+              <button
+                class="btn ${selected ? "small" : "primary"}"
+                data-character-id="${id}"
+                ${disabled ? "disabled" : ""}
+              >
+                ${actionText}
+              </button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
 
+    this.showScreen("charactersScreen");
+  }
 
-        const progress = getProgress();
+  selectCharacter(id) {
+    const user = getCurrentUser();
+    const character = CHARACTERS[id];
 
-        document
-            .querySelector("#menuXpText")
-            .textContent =
-            `${progress.xp} / ${progress.required} XP`;
-
-        document
-            .querySelector("#menuXpBar")
-            .style.width =
-            `${progress.percentage}%`;
-
+    if (!user || !character) {
+      return;
     }
 
+    const owned = user.ownedCharacters.includes(id);
 
-    openLevelSelect() {
+    if (owned) {
+      const users = getUsers();
 
-        if (!this.requireLogin()) return;
+      users[user.username].selectedCharacter = id;
 
-        const container =
-            document.querySelector("#levelCards");
+      saveUsers(users);
 
-        const user = getCurrentUser();
+      this.updateMenu();
+      this.openCharacters();
 
-        container.innerHTML = "";
-
-        LEVELS.forEach((level, index) => {
-
-            const unlocked =
-                index === 0 ||
-                user.wins >= index;
-
-            const card =
-                document.createElement("div");
-
-            card.className = "card";
-
-            card.innerHTML = `
-
-                <div class="card-icon">
-                    ${level.boss ? "👹" : "🌌"}
-                </div>
-
-                <h3>
-                    ${index + 1}. ${level.name}
-                </h3>
-
-                <p>
-                    Distance: ${level.distance}<br>
-                    Threat: ${Math.round(level.speed * 100)}%
-                    ${level.boss
-                        ? "<br>⚠ BOSS MISSION"
-                        : ""}
-                </p>
-
-                <div class="card-actions">
-
-                    <button
-                        class="btn small ${unlocked ? "primary" : ""}"
-                        ${unlocked ? "" : "disabled"}
-                        data-level="${index}"
-                    >
-                        ${unlocked
-                            ? "DEPLOY"
-                            : "🔒 LOCKED"}
-                    </button>
-
-                </div>
-
-            `;
-
-            const button =
-                card.querySelector("button");
-
-            if (unlocked) {
-
-                button.addEventListener(
-                    "click",
-                    () => this.game.start(index)
-                );
-
-            }
-
-            container.appendChild(card);
-
-        });
-
-
-        this.showScreen("selectScreen");
-
+      this.toast(`${character.name} selected.`);
+      return;
     }
 
-
-    openCharacters() {
-
-        if (!this.requireLogin()) return;
-
-        const container =
-            document.querySelector("#characterCards");
-
-        const user = getCurrentUser();
-
-        container.innerHTML = "";
-
-        Object.entries(CHARACTERS)
-            .forEach(([id, character]) => {
-
-                const owned =
-                    user.ownedCharacters.includes(id);
-
-                const selected =
-                    user.selectedCharacter === id;
-
-                const card =
-                    document.createElement("div");
-
-                card.className =
-                    `card ${selected ? "selected" : ""}`;
-
-                card.innerHTML = `
-
-                    <div class="card-icon">
-                        ${character.icon}
-                    </div>
-
-                    <h3>${character.name}</h3>
-
-                    <p>
-                        ${character.description}
-                    </p>
-
-                    <p style="margin-top:10px">
-
-                        SPEED
-                        <div class="bar">
-                            <i style="
-                                width:
-                                ${Math.min(
-                                    100,
-                                    character.speed * 12
-                                )}%
-                            "></i>
-                        </div>
-
-                        SIZE
-                        <div class="bar">
-                            <i style="
-                                width:
-                                ${Math.max(
-                                    15,
-                                    100 - character.size * 4
-                                )}%
-                            "></i>
-                        </div>
-
-                        LUCK
-                        <div class="bar">
-                            <i style="
-                                width:
-                                ${Math.min(
-                                    100,
-                                    character.luck * 55
-                                )}%
-                            "></i>
-                        </div>
-
-                    </p>
-
-                    <div class="price">
-                        ${
-                            owned
-                                ? "OWNED"
-                                : `🪙 ${character.cost}`
-                        }
-                    </div>
-
-                    <div class="card-actions">
-
-                        <button class="
-                            btn small
-                            ${selected ? "primary" : ""}
-                        ">
-                            ${
-                                selected
-                                    ? "SELECTED"
-                                    : owned
-                                        ? "SELECT"
-                                        : "UNLOCK"
-                            }
-                        </button>
-
-                    </div>
-                `;
-
-
-                card
-                    .querySelector("button")
-                    .addEventListener(
-                        "click",
-                        () => this.selectCharacter(id)
-                    );
-
-
-                container.appendChild(card);
-
-            });
-
-
-        this.showScreen("charactersScreen");
-
+    if (user.coins < character.cost) {
+      this.toast("Not enough coins.");
+      return;
     }
 
+    const users = getUsers();
+    const storedUser = users[user.username];
 
-    selectCharacter(id) {
+    storedUser.coins -= character.cost;
+    storedUser.ownedCharacters.push(id);
+    storedUser.selectedCharacter = id;
 
-        const user = getCurrentUser();
+    saveUsers(users);
 
-        const character = CHARACTERS[id];
+    this.updateMenu();
+    this.openCharacters();
 
-        if (user.ownedCharacters.includes(id)) {
+    this.toast(`${character.name} unlocked!`);
+  }
 
-            updateCurrentUser(
-                user => {
-                    user.selectedCharacter = id;
-                }
-            );
+  // =========================================
+  // SHOP
+  // =========================================
 
-            this.openCharacters();
-            this.update();
-
-            this.toast(
-                `${character.name} SELECTED`
-            );
-
-            return;
-
-        }
-
-
-        if (user.coins < character.cost) {
-
-            this.toast("NOT ENOUGH COINS");
-
-            return;
-
-        }
-
-
-        updateCurrentUser(user => {
-
-            user.coins -= character.cost;
-
-            user.ownedCharacters.push(id);
-
-            user.selectedCharacter = id;
-
-        });
-
-
-        this.openCharacters();
-        this.update();
-
-        this.toast(
-            `${character.name} UNLOCKED!`
-        );
-
+  openShop() {
+    if (!this.requireLogin()) {
+      return;
     }
 
+    const user = getCurrentUser();
 
-    openShop() {
+    this.shopCards.innerHTML = Object.entries(SHOP)
+      .map(([id, item]) => {
+        const level = user.upgrades[id] || 0;
+        const price = item.base * (level + 1);
 
-        if (!this.requireLogin()) return;
+        return `
+          <div class="card">
+            <div class="card-icon">${item.icon}</div>
 
-        const container =
-            document.querySelector("#shopCards");
+            <h3>${item.name}</h3>
 
-        const user = getCurrentUser();
+            <p>${item.description}</p>
 
-        document
-            .querySelector("#shopCoins")
-            .textContent = user.coins;
+            <div class="small-text">
+              LEVEL ${level}
+            </div>
 
-        container.innerHTML = "";
+            <div class="bar">
+              <i style="width:${Math.min(100, level * 20)}%"></i>
+            </div>
 
+            <div class="price">
+              ${price} COINS
+            </div>
 
-        Object.entries(SHOP)
-            .forEach(([id, item]) => {
+            <div class="card-actions">
+              <button
+                class="btn primary"
+                data-upgrade-id="${id}"
+              >
+                UPGRADE
+              </button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
 
-                const level =
-                    user.upgrades[id];
+    this.showScreen("shopScreen");
+  }
 
-                const price =
-                    item.base * (level + 1);
+  buyUpgrade(id) {
+    const user = getCurrentUser();
+    const item = SHOP[id];
 
-
-                const card =
-                    document.createElement("div");
-
-                card.className = "card";
-
-                card.innerHTML = `
-
-                    <div class="card-icon">
-                        ${item.icon}
-                    </div>
-
-                    <h3>${item.name}</h3>
-
-                    <p>
-                        ${item.description}
-                    </p>
-
-                    <div class="price">
-                        LEVEL ${level}
-                    </div>
-
-                    <div class="card-actions">
-
-                        <button class="
-                            btn small primary
-                        ">
-                            🪙 ${price}
-                        </button>
-
-                    </div>
-
-                `;
-
-
-                card
-                    .querySelector("button")
-                    .addEventListener(
-                        "click",
-                        () => this.buyUpgrade(id)
-                    );
-
-
-                container.appendChild(card);
-
-            });
-
-
-        this.showScreen("shopScreen");
-
+    if (!user || !item) {
+      return;
     }
 
+    const currentLevel = user.upgrades[id] || 0;
+    const price = item.base * (currentLevel + 1);
 
-    buyUpgrade(id) {
-
-        const user = getCurrentUser();
-
-        const item = SHOP[id];
-
-        const level =
-            user.upgrades[id];
-
-        const price =
-            item.base * (level + 1);
-
-
-        if (user.coins < price) {
-
-            this.toast("NOT ENOUGH COINS");
-
-            return;
-
-        }
-
-
-        updateCurrentUser(user => {
-
-            user.coins -= price;
-
-            user.upgrades[id]++;
-
-        });
-
-
-        this.openShop();
-        this.update();
-
-        this.toast(
-            `${item.name} UPGRADED`
-        );
-
+    if (user.coins < price) {
+      this.toast("Not enough coins.");
+      return;
     }
 
+    const users = getUsers();
+    const storedUser = users[user.username];
 
-    openProfile() {
+    storedUser.coins -= price;
+    storedUser.upgrades[id] = currentLevel + 1;
 
-        if (!this.requireLogin()) return;
+    saveUsers(users);
 
-        const user = getCurrentUser();
+    this.updateMenu();
+    this.openShop();
 
-        document
-            .querySelector("#profileName")
-            .textContent = user.username;
+    this.toast(`${item.name} upgraded to level ${currentLevel + 1}.`);
+  }
 
-        document
-            .querySelector("#profileJoined")
-            .textContent =
-            `Joined ${user.created}`;
+  // =========================================
+  // PROFILE
+  // =========================================
 
-        document
-            .querySelector("#profileLevel")
-            .textContent =
-            `LEVEL ${user.level}`;
-
-        document
-            .querySelector("#profileXp")
-            .textContent =
-            `${user.xp} XP`;
-
-        document
-            .querySelector("#profileWins")
-            .textContent =
-            user.wins;
-
-        document
-            .querySelector("#profileDeaths")
-            .textContent =
-            user.deaths;
-
-        document
-            .querySelector("#profileBosses")
-            .textContent =
-            user.bosses;
-
-        document
-            .querySelector("#profileCoins")
-            .textContent =
-            user.coins;
-
-
-        this.showScreen("profileScreen");
-
+  openProfile() {
+    if (!this.requireLogin()) {
+      return;
     }
 
+    const user = getCurrentUser();
 
-    toast(message) {
-
-        const element =
-            document.querySelector("#toast");
-
-        element.textContent = message;
-
-        element.classList.add("show");
-
-        clearTimeout(this.toastTimer);
-
-        this.toastTimer =
-            setTimeout(
-                () =>
-                    element.classList.remove("show"),
-                1600
-            );
-
+    if (this.profileUsername) {
+      this.profileUsername.textContent = user.username;
     }
 
+    if (this.profileLevel) {
+      this.profileLevel.textContent = user.level;
+    }
+
+    if (this.profileXP) {
+      this.profileXP.textContent = user.xp;
+    }
+
+    if (this.profileCoins) {
+      this.profileCoins.textContent = user.coins;
+    }
+
+    if (this.profileHighScore) {
+      this.profileHighScore.textContent = user.highScore;
+    }
+
+    if (this.profileWins) {
+      this.profileWins.textContent = user.wins;
+    }
+
+    if (this.profileDeaths) {
+      this.profileDeaths.textContent = user.deaths;
+    }
+
+    if (this.profileBosses) {
+      this.profileBosses.textContent = user.bosses;
+    }
+
+    if (this.profileJoined) {
+      this.profileJoined.textContent = new Date(
+        user.created
+      ).toLocaleDateString();
+    }
+
+    this.showScreen("profileScreen");
+  }
+
+  // =========================================
+  // TOAST
+  // =========================================
+
+  toast(message) {
+    if (!this.toastElement) {
+      return;
+    }
+
+    this.toastElement.textContent = message;
+    this.toastElement.classList.add("show");
+
+    clearTimeout(this.toastTimeout);
+
+    this.toastTimeout = setTimeout(() => {
+      this.toastElement.classList.remove("show");
+    }, 2200);
+  }
 }
